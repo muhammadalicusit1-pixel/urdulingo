@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Test - Urdu Lingo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #58CC02 0%, #4CAF50 100%);
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #58CC02;
+            margin-bottom: 1rem;
+        }
+        .test-btn {
+            padding: 1rem 2rem;
+            background: #58CC02;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s;
+        }
+        .test-btn:hover {
+            background: #4CAF50;
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        .info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #e7f3ff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Urdu Lingo Download Test</h1>
+        <p>Test the APK download functionality</p>
+        
+        <button class="test-btn" onclick="testOnlineDownload()">
+            📱 Test Online Download
+        </button>
+        
+        <button class="test-btn" onclick="testDirectLink()">
+            🔗 Test Direct Link
+        </button>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="info">
+            <strong>ℹ️ Testing Info:</strong><br>
+            <strong>Online Download:</strong> Uses fetch + blob (same as website)<br>
+            <strong>Direct Link:</strong> Opens backend URL directly<br>
+            <strong>Backend:</strong> http://3.110.151.43/api/download/apk<br><br>
+            <strong>Note:</strong> This only works when you have internet connection!
+        </div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+
+        async function testOnlineDownload() {
+            statusDiv.className = 'status';
+            statusDiv.textContent = '⏳ Downloading...';
+            statusDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('http://3.110.151.43/api/download/apk');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'UrduLingo.apk';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Download started successfully! Check your downloads folder.';
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Download failed: ${error.message}\n\nMake sure you have internet connection and the backend server is running.`;
+                console.error('Download error:', error);
+            }
+        }
+
+        function testDirectLink() {
+            statusDiv.className = 'status success';
+            statusDiv.textContent = '🔗 Opening download link in new tab...';
+            statusDiv.style.display = 'block';
+            window.open('http://3.110.151.43/api/download/apk', '_blank');
+        }
+    </script>
+</body>
+</html>
